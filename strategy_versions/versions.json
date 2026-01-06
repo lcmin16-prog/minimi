@@ -1,0 +1,39 @@
+{
+  "versions": [
+    {
+      "version_id": "v1.0-baseline_20260106_152517",
+      "version_name": "v1.0-baseline",
+      "created_at": "20260106_152517",
+      "description": "현재 전략 (손절 -3%, 익절 +5%)",
+      "status": "created"
+    },
+    {
+      "version_id": "v1.1-tight-tp_20260106_152517",
+      "version_name": "v1.1-tight-tp",
+      "created_at": "20260106_152517",
+      "description": "익절 낮춤 (손절 -2%, 익절 +1%)",
+      "status": "created"
+    },
+    {
+      "version_id": "v1.2-balanced_20260106_152517",
+      "version_name": "v1.2-balanced",
+      "created_at": "20260106_152517",
+      "description": "균형 (손절 -2.5%, 익절 +1.5%)",
+      "status": "created"
+    },
+    {
+      "version_id": "v2.0-strict-rsi_20260106_152517",
+      "version_name": "v2.0-strict-rsi",
+      "created_at": "20260106_152517",
+      "description": "RSI 엄격 + 손익 조정 (RSI 25/75, 손절 -2.5%, 익절 +1.5%)",
+      "status": "created"
+    },
+    {
+      "version_id": "v2.1-conservative_20260106_152517",
+      "version_name": "v2.1-conservative",
+      "created_at": "20260106_152517",
+      "description": "보수적 (RSI 25/75, 손절 -2%, 익절 +1%)",
+      "status": "created"
+    }
+  ]
+}

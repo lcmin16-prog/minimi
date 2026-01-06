@@ -1,0 +1,17 @@
+{
+  "version_id": "v2.0-strict-rsi_20260106_152517",
+  "version_name": "v2.0-strict-rsi",
+  "description": "RSI 엄격 + 손익 조정 (RSI 25/75, 손절 -2.5%, 익절 +1.5%)",
+  "created_at": "20260106_152517",
+  "config": {
+    "STOP_LOSS_PCT": 0.025,
+    "TAKE_PROFIT_PCT": 0.015,
+    "RSI_PERIOD": 14,
+    "TRADE_AMOUNT_KRW": 10000.0
+  },
+  "strategy_params": {
+    "RSI_BUY_THRESHOLD": 25,
+    "RSI_SELL_THRESHOLD": 75
+  },
+  "status": "created"
+}
