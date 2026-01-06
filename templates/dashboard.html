@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimi Trading Bot Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-badge.paper {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .status-badge.real {
+            background: #ff4444;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .card .value.profit {
+            color: #4caf50;
+        }
+
+        .card .value.loss {
+            color: #f44336;
+        }
+
+        .card .sub-value {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-container h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        #priceChart {
+            width: 100%;
+            height: 400px;
+        }
+
+        .trades-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .trades-container h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .trades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .trades-table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .trades-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .trade-buy {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .trade-sell {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        .auto-refresh {
+            font-size: 12px;
+            color: #999;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Minimi Trading Bot Dashboard</h1>
+            <div class="status">
+                <span class="status-badge" id="modeBadge">Loading...</span>
+                <span id="tickerInfo">Loading...</span>
+                <span class="auto-refresh">⏱️ Auto-refresh every 5s</span>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>💰 Total Equity</h2>
+                <div class="value" id="totalEquity">-</div>
+                <div class="sub-value" id="initialEquity">Initial: 1,000,000원</div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Profit/Loss</h2>
+                <div class="value" id="profitLoss">-</div>
+                <div class="sub-value" id="profitPct">-</div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Win Rate</h2>
+                <div class="value" id="winRate">-</div>
+                <div class="sub-value" id="winLoss">-</div>
+            </div>
+
+            <div class="card">
+                <h2>💵 KRW Balance</h2>
+                <div class="value" id="krwBalance">-</div>
+                <div class="sub-value" id="coinValue">Coin: -</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>📊 Price & RSI Chart</h2>
+            <button class="refresh-btn" onclick="loadChartData()">🔄 Refresh Chart</button>
+            <canvas id="priceChart"></canvas>
+        </div>
+
+        <div class="trades-container">
+            <h2>📜 Recent Trades</h2>
+            <button class="refresh-btn" onclick="loadTrades()">🔄 Refresh Trades</button>
+            <div id="tradesTable">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let priceChart = null;
+
+        // Format number with commas
+        function formatNumber(num, decimals = 0) {
+            return num.toLocaleString('ko-KR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
+        // Load status data
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update mode badge
+                    const modeBadge = document.getElementById('modeBadge');
+                    modeBadge.textContent = data.mode === 'paper' ? '📝 Paper Trading' : '💸 Real Trading';
+                    modeBadge.className = `status-badge ${data.mode}`;
+
+                    // Update ticker info
+                    document.getElementById('tickerInfo').textContent = 
+                        `${data.ticker} | SL: ${data.config.stop_loss_pct}% | TP: ${data.config.take_profit_pct}% | RSI: ${data.config.rsi_period}`;
+
+                    // Update performance
+                    const perf = data.performance;
+                    document.getElementById('totalEquity').textContent = formatNumber(perf.total_equity) + '원';
+                    
+                    const profitElement = document.getElementById('profitLoss');
+                    profitElement.textContent = (perf.profit >= 0 ? '+' : '') + formatNumber(perf.profit) + '원';
+                    profitElement.className = perf.profit >= 0 ? 'value profit' : 'value loss';
+                    
+                    document.getElementById('profitPct').textContent = 
+                        (perf.profit_pct >= 0 ? '+' : '') + perf.profit_pct.toFixed(2) + '%';
+
+                    document.getElementById('krwBalance').textContent = formatNumber(perf.krw_balance) + '원';
+                    document.getElementById('coinValue').textContent = 
+                        `Coin: ${formatNumber(perf.coin_value)} (${perf.coin_amount.toFixed(8)} BTC)`;
+
+                    // Load report for win rate
+                    loadReport();
+                }
+            } catch (error) {
+                console.error('Failed to load status:', error);
+            }
+        }
+
+        // Load report data
+        async function loadReport() {
+            try {
+                const response = await fetch('/api/report');
+                const data = await response.json();
+
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('winRate').textContent = stats.win_rate.toFixed(1) + '%';
+                    document.getElementById('winLoss').textContent = 
+                        `${stats.wins}W ${stats.losses}L (${stats.total_trades} trades)`;
+                } else {
+                    document.getElementById('winRate').textContent = 'N/A';
+                    document.getElementById('winLoss').textContent = 'No trades yet';
+                }
+            } catch (error) {
+                document.getElementById('winRate').textContent = 'N/A';
+                document.getElementById('winLoss').textContent = 'No trades yet';
+            }
+        }
+
+        // Load chart data
+        async function loadChartData() {
+            try {
+                const response = await fetch('/api/chart');
+                const data = await response.json();
+
+                if (data.success) {
+                    const chartData = data.data;
+                    
+                    // Prepare data
+                    const labels = chartData.map(d => new Date(d.time).toLocaleTimeString('ko-KR'));
+                    const prices = chartData.map(d => d.close);
+                    const rsi = chartData.map(d => d.rsi);
+
+                    // Destroy existing chart
+                    if (priceChart) {
+                        priceChart.destroy();
+                    }
+
+                    // Create new chart
+                    const ctx = document.getElementById('priceChart').getContext('2d');
+                    priceChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [
+                                {
+                                    label: 'Price',
+                                    data: prices,
+                                    borderColor: '#667eea',
+                                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                    yAxisID: 'y',
+                                },
+                                {
+                                    label: 'RSI',
+                                    data: rsi,
+                                    borderColor: '#f44336',
+                                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                                    yAxisID: 'y1',
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    min: 0,
+                                    max: 100,
+                                    grid: {
+                                        drawOnChartArea: false,
+                                    },
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load chart:', error);
+            }
+        }
+
+        // Load trades
+        async function loadTrades() {
+            try {
+                const response = await fetch('/api/trades?limit=20');
+                const data = await response.json();
+
+                if (data.success && data.trades.length > 0) {
+                    let html = `
+                        <table class="trades-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Signal</th>
+                                    <th>Status</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    data.trades.forEach(trade => {
+                        const signal = trade.side || 'unknown';
+                        const signalClass = signal === 'buy' ? 'trade-buy' : 'trade-sell';
+                        const status = trade.status || 'unknown';
+                        const time = trade.timestamp || 'N/A';
+
+                        let details = '';
+                        if (trade.price) details += `Price: ${formatNumber(trade.price)}원 `;
+                        if (trade.qty) details += `Qty: ${trade.qty.toFixed(8)} `;
+                        if (trade.krw_spent) details += `Spent: ${formatNumber(trade.krw_spent)}원`;
+                        if (trade.krw_received) details += `Received: ${formatNumber(trade.krw_received)}원`;
+
+                        html += `
+                            <tr>
+                                <td>${time}</td>
+                                <td class="${signalClass}">${signal.toUpperCase()}</td>
+                                <td>${status}</td>
+                                <td>${details}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += '</tbody></table>';
+                    document.getElementById('tradesTable').innerHTML = html;
+                } else {
+                    document.getElementById('tradesTable').innerHTML = 
+                        '<div class="loading">No trades yet</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load trades:', error);
+                document.getElementById('tradesTable').innerHTML = 
+                    '<div class="loading">Failed to load trades</div>';
+            }
+        }
+
+        // Initialize
+        loadStatus();
+        loadChartData();
+        loadTrades();
+
+        // Auto refresh every 5 seconds
+        setInterval(loadStatus, 5000);
+        setInterval(loadChartData, 30000);
+        setInterval(loadTrades, 10000);
+    </script>
+</body>
+</html>

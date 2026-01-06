@@ -1,0 +1,13 @@
+Backtest Report
+================
+Cumulative Return: -1.11%
+MDD: -1.66%
+Win Rate: 74.65%
+Risk/Reward: 0.20
+Trade Count: 142
+Average Holding Time: 3h 36m
+Total Fees: 12320.59
+
+Main Reasons for Underperformance
+- Risk/reward below 1 indicates losses outweigh wins.
+- Fee drag is high relative to trading activity.

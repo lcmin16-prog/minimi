@@ -1,0 +1,48 @@
+# .gitignore 추가 항목
+
+# 백테스트 결과
+trades.csv
+trades.log
+paper_account.json
+
+# 시뮬레이션 로그
+simulation.log
+nohup.out
+
+# 원본 백업
+original_backup/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 환경 파일
+.env
+.venv
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
