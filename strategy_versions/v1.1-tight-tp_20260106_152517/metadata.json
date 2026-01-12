@@ -1,0 +1,18 @@
+{
+  "version_id": "v1.1-tight-tp_20260106_152517",
+  "version_name": "v1.1-tight-tp",
+  "description": "익절 낮춤 (손절 -2%, 익절 +1%)",
+  "created_at": "20260106_152517",
+  "config": {
+    "STOP_LOSS_PCT": 0.02,
+    "TAKE_PROFIT_PCT": 0.01,
+    "RSI_PERIOD": 14,
+    "TRADE_AMOUNT_KRW": 10000.0
+  },
+  "strategy_params": {
+    "RSI_BUY_THRESHOLD": 30,
+    "RSI_SELL_THRESHOLD": 70
+  },
+  "status": "tested",
+  "tested_at": "20260106_152906"
+}
